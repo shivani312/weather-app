@@ -9,6 +9,8 @@ import { ReactSelect } from '../../../shared/components/dropDown/reactSelect';
 import { selectedOption } from '../../../shared/util/utility';
 
 import WeatherDetails from '../component/weatherDetils';
+import { IWeatherChartData } from '../interface/weatherChart.interface';
+import WeatherChart from '../component/weatherChart';
 
 const Weather:React.FC = () => {
     const [selectedCity, setSelectedCity] = useState<ISelectedCity>(
@@ -26,6 +28,8 @@ const Weather:React.FC = () => {
     );
     const [weatherData, setWeatherData] = useState<IWeatherDetails>({} as IWeatherDetails);
     const [filters, setFilter] = useState<IDropDownOption[]>([]);
+    const [weatherChart,setWeatherChart] = useState<IWeatherChartData[]>([])
+    
     const apiKey = ''; // Replace with your OpenWeatherMap API key
 
     const fetchWeatherData = useCallback((city:string) => {
@@ -52,6 +56,21 @@ const Weather:React.FC = () => {
 			setFilter([...filterData]);
         // eslint-disable-next-line
     },[fetchWeatherData])
+    
+    const fetchData = useCallback( async () => {
+        try {
+            const response = await axios.get(
+            `https://api.openweathermap.org/data/2.5/forecast?q=${selectedCity.city}&appid=${apiKey}&cnt=10&units=metric`
+            );
+            setWeatherChart(response.data.list);
+        } catch (error) {
+            console.error(error);
+        }
+    },[selectedCity.city])
+
+    useEffect(() => {
+        fetchData()
+    },[fetchData])
 
     const handleChange = (value: string)=>{
         const selectedCity = City.filter(
@@ -68,6 +87,7 @@ return (
         {isEmpty(weatherData) && <p>Loading...</p>}
         {
         !isEmpty(weatherData) && (
+        <>
         <div className='weather-section flex text--white m--20'>
         <WeatherDetails details= {weatherData} selectedCity={selectedCity}/>
         <div className='rightSide text--black pt--25 pr--20 position--relative'>
@@ -86,8 +106,14 @@ return (
 					/>
             </div>
             <HumidityDetails  details= {weatherData} selectedCity={selectedCity}/>
-            </div>
+            {
+            weatherChart.length > 0 &&  (
+                <WeatherChart weatherData={weatherChart}/>
+            )
+        }
         </div>
+        </div>
+        </>
         )}
         </div>
     </>

@@ -72,3 +72,5 @@ export interface IWeatherDetails {
 export interface IDropDownFilter {
     [key: string]: IDropDownOption[];
 }
+
+
