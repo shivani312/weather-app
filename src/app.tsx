@@ -1,16 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 
 import './assets/styles/app.scss';
-import Layout from './hoc/layout';
+import Weather from './features/weather/container/weather';
 
 
 const  App = () =>{
 	return (
-		<Layout>
 			<Routes>
-				<Route path='/' element />
+				<Route path='/' element={<Weather/>} />
 			</Routes>
-		</Layout>
 	);
 }
 
