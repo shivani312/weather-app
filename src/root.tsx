@@ -1,14 +1,21 @@
-import React from 'react';
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
 
-import { BrowserRouter } from 'react-router-dom';
-import App from './app'
+import ErrorHandler from "./hoc/withErrorHandler/errorHandler";
+import ErrorBoundary from "./shared/components/errorBoundary/errorBoundary";
+import App from "./app";
 
 const Root: React.FC = (props) => {
-	return (
-		<BrowserRouter>
-			<App {...props} />
-		</BrowserRouter>
-	);
+    return (
+        <>
+            <ErrorHandler />
+            <ErrorBoundary>
+                <BrowserRouter>
+                    <App {...props} />
+                </BrowserRouter>
+            </ErrorBoundary>
+        </>
+    );
 };
 
 export default Root;

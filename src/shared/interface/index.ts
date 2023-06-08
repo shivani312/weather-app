@@ -1,7 +1,7 @@
 import { NavigateFunction } from 'react-router-dom';
 
 export interface IResponseObject<T> {
-	isError: boolean;
+	code: number;
 	message: string;
 	data: T;
 }

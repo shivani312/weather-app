@@ -1,9 +1,10 @@
 import React from "react";
-import { ISelectedCity, IWeatherDetails } from "../interface/weather.interface";
+import { ISelectedCity } from "../interface/weather.interface";
 import { isEmpty } from "lodash";
+import { IWeatherChartData } from "../interface/weatherChart.interface";
 
 interface IProps {
-    details: IWeatherDetails;
+    details: IWeatherChartData;
     selectedCity: ISelectedCity;
 }
 
