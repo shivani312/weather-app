@@ -24,8 +24,6 @@ export const notify = (
     type?: NotificationType,
     options: any = {}
 ) => {
-    console.log("type:", type);
-    console.log("message:", message);
     const msg = `${message[0].toUpperCase()}${message.substr(1)}`;
 
     options = {

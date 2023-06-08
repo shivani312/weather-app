@@ -49,7 +49,7 @@ const WeatherChart: React.FC<IProps> = (props) => {
     };
 
     return (
-        <div className="chart-section m--20">
+        <div className="chart-section mr--20">
             <Line data={chartData} options={chartOptions} />
         </div>
     );

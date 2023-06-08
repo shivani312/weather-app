@@ -10,7 +10,6 @@ const ErrorHandler: FC = () => {
     const axiosInstance = axios.create();
 
     useEffect(() => {
-        console.log("in");
         const resInterceptor = axiosInstance.interceptors.response.use(
             (res: AxiosResponse<IResponseObject<any>>) => {
                 const data = res.data;

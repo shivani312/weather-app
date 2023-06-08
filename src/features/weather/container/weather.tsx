@@ -1,34 +1,38 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import isEmpty from "lodash/isEmpty";
+import { toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 import Logo from "../../../assets/images/Logo2.png";
+import loader from '../../../assets/images/loader.gif'
 
 import { IDropDownOption, ISelectedCity } from "../interface/weather.interface";
 import { City } from "../../../shared/constants/constants";
 import { ReactSelect } from "../../../shared/components/dropDown/reactSelect";
 import { selectedOption } from "../../../shared/util/utility";
-
-import WeatherDetails from "../component/weatherDetils";
 import {
     IWeatherChartData,
     IWetherDetails,
 } from "../interface/weatherChart.interface";
-import WeatherChart from "../component/weatherChart";
+
+import WeatherDetails from "../component/weatherDetails";
+import WeatherChart from '../component/weatherChart';
 import WeekInfoCard from "../component/card";
-import { notify } from "../../../shared/components/notification/notification";
+import SunRiseSetCard from "../component/sunCard";
 
 const Weather: React.FC = () => {
     const [selectedCity, setSelectedCity] = useState<ISelectedCity>({
-        city: "Delhi",
-        lat: "28.6600",
-        lng: "77.2300",
+        city: "Ahmedabad",
+        lat: "23.0300",
+        lng: "72.5800 ",
         country: "India",
         iso2: "IN",
-        admin_name: "Delhi",
-        capital: "admin",
-        population: "29617000",
-        population_proper: "16753235",
+        admin_name: "Gujarat",
+        capital: "minor",
+        population: "7410000",
+        population_proper: "5570585",
     });
     const [filters, setFilter] = useState<IDropDownOption[]>([]);
     const [selectedCard, setSelectedCard] = useState(0);
@@ -61,13 +65,24 @@ const Weather: React.FC = () => {
                     selectedCity.city
                 }&appid=${process.env.REACT_APP_API_KEY as string}&units=metric`
             );
-            console.log("response:", response);
+            toast.success('Data fetch successfully', {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                draggable: true,
+            });
             setWeatherChart(response.data);
             setChartData(response.data?.list[0]);
-        } catch (response) {
-            console.error(response);
-            // notify(error.response.data.message, "error");
-            // throw new Error(data.message as string);
+        } catch (error:any) {
+            console.error(error);
+            toast.error(error.response.data.message, {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                draggable: true,
+            });
         }
     }, [selectedCity.city]);
 
@@ -118,29 +133,30 @@ const Weather: React.FC = () => {
                             />
                         </div>
                     </div>
-                    <div className="container">
-                        <div className="flex align-items--center justify-content--between width--full flex--column">
-                            {isEmpty(chartData) && <p>Loading...</p>}
-                            {!isEmpty(chartData) && (
-                                <>
-                                    <WeatherDetails
-                                        details={chartData}
-                                        selectedCity={selectedCity}
-                                        cityDetails={weatherChart.city}
-                                    />
-                                    <WeekInfoCard
-                                        data={weatherChart.list}
-                                        setSelectedCard={setSelectedCard}
-                                        selectedCard={selectedCard}
-                                        setChartData={setChartData}
-                                    />
-                                </>
+                    <div className="container flex align-items--center justify-content--between flex--column">
+                        {isEmpty(chartData) && <div>
+                            <img src={loader} alt='loader'/>
+                            </div>}
+                        {!isEmpty(chartData) && (
+                            <>
+                                <WeatherDetails
+                                    details={chartData}
+                                    selectedCity={selectedCity}
+                                    cityDetails={weatherChart.city}
+                                />
+                                <WeekInfoCard
+                                    data={weatherChart.list}
+                                    setSelectedCard={setSelectedCard}
+                                    selectedCard={selectedCard}
+                                    setChartData={setChartData}
+                                />
+                            <div className="flex align-items--center justify-content--evenly width--full">
+                            {weatherChart.list?.length > 0 && (
+                                <WeatherChart weatherData={weatherChart.list} />
                             )}
+                            <SunRiseSetCard data={weatherChart.city} />
                         </div>
-                    </div>
-                    <div className="">
-                        {weatherChart.list?.length > 0 && (
-                            <WeatherChart weatherData={weatherChart.list} />
+                            </>
                         )}
                     </div>
                 </div>
