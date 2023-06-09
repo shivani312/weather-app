@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import isEmpty from "lodash/isEmpty";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 import Logo from "../../../assets/images/Logo2.png";
-import loader from '../../../assets/images/loader.gif'
+import loader from "../../../assets/images/loader.gif";
 
 import { IDropDownOption, ISelectedCity } from "../interface/weather.interface";
 import { City } from "../../../shared/constants/constants";
@@ -18,7 +18,7 @@ import {
 } from "../interface/weatherChart.interface";
 
 import WeatherDetails from "../component/weatherDetails";
-import WeatherChart from '../component/weatherChart';
+import WeatherChart from "../component/weatherChart";
 import WeekInfoCard from "../component/card";
 import SunRiseSetCard from "../component/sunCard";
 
@@ -65,7 +65,7 @@ const Weather: React.FC = () => {
                     selectedCity.city
                 }&appid=${process.env.REACT_APP_API_KEY as string}&units=metric`
             );
-            toast.success('Data fetch successfully', {
+            toast.success("Data fetch successfully", {
                 position: toast.POSITION.BOTTOM_RIGHT,
                 autoClose: 3000,
                 hideProgressBar: true,
@@ -74,7 +74,7 @@ const Weather: React.FC = () => {
             });
             setWeatherChart(response.data);
             setChartData(response.data?.list[0]);
-        } catch (error:any) {
+        } catch (error: any) {
             console.error(error);
             toast.error(error.response.data.message, {
                 position: toast.POSITION.BOTTOM_RIGHT,
@@ -109,9 +109,6 @@ const Weather: React.FC = () => {
                                 className="width--full height--full"
                             />
                         </div>
-                        <p className="title font-size--30 font--bold ">
-                            Forecast
-                        </p>
                         <div className="width--20 mr--20">
                             <ReactSelect
                                 name="city"
@@ -134,9 +131,11 @@ const Weather: React.FC = () => {
                         </div>
                     </div>
                     <div className="container flex align-items--center justify-content--between flex--column">
-                        {isEmpty(chartData) && <div>
-                            <img src={loader} alt='loader'/>
-                            </div>}
+                        {isEmpty(chartData) && (
+                            <div>
+                                <img src={loader} alt="loader" />
+                            </div>
+                        )}
                         {!isEmpty(chartData) && (
                             <>
                                 <WeatherDetails
@@ -150,12 +149,14 @@ const Weather: React.FC = () => {
                                     selectedCard={selectedCard}
                                     setChartData={setChartData}
                                 />
-                            <div className="flex align-items--center justify-content--evenly width--full">
-                            {weatherChart.list?.length > 0 && (
-                                <WeatherChart weatherData={weatherChart.list} />
-                            )}
-                            <SunRiseSetCard data={weatherChart.city} />
-                        </div>
+                                <div className="flex align-items--center justify-content--evenly width--full">
+                                    {weatherChart.list?.length > 0 && (
+                                        <WeatherChart
+                                            weatherData={weatherChart.list}
+                                        />
+                                    )}
+                                    <SunRiseSetCard data={weatherChart.city} />
+                                </div>
                             </>
                         )}
                     </div>
