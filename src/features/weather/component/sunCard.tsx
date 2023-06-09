@@ -1,10 +1,10 @@
 import moment from "moment";
 import sunrise from "../../../assets/images/sunrise.gif";
-import sunset from "../../../assets/images/sunset.gif"
+import sunset from "../../../assets/images/sunset.gif";
 import { ICity } from "../interface/weatherChart.interface";
 
 interface IProps {
-    data: ICity
+    data: ICity;
 }
 
 const SunRiseSetCard: React.FC<IProps> = (props) => {
@@ -17,9 +17,9 @@ const SunRiseSetCard: React.FC<IProps> = (props) => {
                     alt="sunrise"
                     className="height--full width--full"
                 />
-                
+
                 <div className="font-size--22 font-semi--bold mt--20">
-                    Sunrise : {moment.unix(data.sunrise).format('LT')}
+                    Sunrise : {moment.unix(data.sunrise).format("LT")}
                 </div>
             </div>
             <div className="card-image flex align-items--center justify-content--center flex--column">
@@ -29,7 +29,7 @@ const SunRiseSetCard: React.FC<IProps> = (props) => {
                     className="height--full width--full"
                 />
                 <div className="font-size--22 font-semi--bold mt--20">
-                    Sunset : {moment.unix(data.sunset).format('LT')}
+                    Sunset : {moment.unix(data.sunset).format("LT")}
                 </div>
             </div>
         </div>
