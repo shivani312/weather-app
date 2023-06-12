@@ -23,7 +23,7 @@ const WeekInfoCard: React.FC<IProps> = (props) => {
                     <div className="cardList flex flex--wrap mb--10 ">
                         {data.length > 0 &&
                             data.map((item, index) => {
-                                if (index < 17) {
+                                if (index < 16) {
                                     return (
                                         <div
                                             key={index}
