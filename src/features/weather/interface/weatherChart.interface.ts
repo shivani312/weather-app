@@ -1,3 +1,11 @@
+
+export interface IWetherDetails {
+    cod: string
+    message: number
+    cnt: number
+    list: IWeatherChartData[]
+    city: ICity
+}
 export interface IWeatherChartData {
     dt: number
     main: IMain
@@ -41,4 +49,20 @@ export interface IWind {
 
 export interface ISys {
     pod: string
+}
+
+export interface ICity {
+    id: number
+    name: string
+    coord: ICoord
+    country: string
+    population: number
+    timezone: number
+    sunrise: number
+    sunset: number
+}
+
+export interface ICoord {
+    lat: number
+    lon: number
 }

@@ -1,56 +1,50 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import isEmpty from "lodash/isEmpty";
-import moment from "moment";
+import { toast } from "react-toastify";
 
-import {
-    IDropDownOption,
-    ISelectedCity,
-    IWeatherDetails,
-} from "../interface/weather.interface";
+import "react-toastify/dist/ReactToastify.css";
+
+import Logo from "../../../assets/images/Logo2.png";
+import loader from "../../../assets/images/loader.gif";
+
+import { IDropDownOption, ISelectedCity } from "../interface/weather.interface";
 import { City } from "../../../shared/constants/constants";
-import HumidityDetails from "../component/humidityDetails";
 import { ReactSelect } from "../../../shared/components/dropDown/reactSelect";
 import { selectedOption } from "../../../shared/util/utility";
+import {
+    IWeatherChartData,
+    IWetherDetails,
+} from "../interface/weatherChart.interface";
 
-import WeatherDetails from "../component/weatherDetils";
-import { IWeatherChartData } from "../interface/weatherChart.interface";
+import WeatherDetails from "../component/weatherDetails";
 import WeatherChart from "../component/weatherChart";
+import WeekInfoCard from "../component/card";
+import SunRiseSetCard from "../component/sunCard";
 
 const Weather: React.FC = () => {
     const [selectedCity, setSelectedCity] = useState<ISelectedCity>({
-        city: "Delhi",
-        lat: "28.6600",
-        lng: "77.2300",
+        city: "Ahmedabad",
+        lat: "23.0300",
+        lng: "72.5800 ",
         country: "India",
         iso2: "IN",
-        admin_name: "Delhi",
-        capital: "admin",
-        population: "29617000",
-        population_proper: "16753235",
+        admin_name: "Gujarat",
+        capital: "minor",
+        population: "7410000",
+        population_proper: "5570585",
     });
-    const [weatherData, setWeatherData] = useState<IWeatherDetails>(
-        {} as IWeatherDetails
-    );
     const [filters, setFilter] = useState<IDropDownOption[]>([]);
-    const [weatherChart, setWeatherChart] = useState<IWeatherChartData[]>([]);
+    const [selectedCard, setSelectedCard] = useState(0);
 
-    const fetchWeatherData = useCallback((city: string) => {
-        const apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${
-            process.env.REACT_APP_API_KEY as string
-        }`;
-        axios
-            .get(apiURL)
-            .then((res) => {
-                setWeatherData(res.data);
-            })
-            .catch((err) => {
-                console.log("err", err);
-            });
-    }, []);
+    const [chartData, setChartData] = useState<IWeatherChartData>(
+        {} as IWeatherChartData
+    );
+    const [weatherChart, setWeatherChart] = useState<IWetherDetails>(
+        {} as IWetherDetails
+    );
 
     useEffect(() => {
-        fetchWeatherData(selectedCity.city);
         let filterData: IDropDownOption[] = [];
         City.map((data: ISelectedCity) => {
             filterData.push({
@@ -62,20 +56,33 @@ const Weather: React.FC = () => {
         });
         setFilter([...filterData]);
         // eslint-disable-next-line
-    }, [fetchWeatherData]);
+    }, []);
 
     const fetchData = useCallback(async () => {
         try {
             const response = await axios.get(
                 `https://api.openweathermap.org/data/2.5/forecast?q=${
                     selectedCity.city
-                }&appid=${
-                    process.env.REACT_APP_API_KEY as string
-                }&cnt=7&units=metric`
+                }&appid=${process.env.REACT_APP_API_KEY as string}&units=metric`
             );
-            setWeatherChart(response.data.list);
-        } catch (error) {
+            toast.success("Data fetch successfully", {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                draggable: true,
+            });
+            setWeatherChart(response.data);
+            setChartData(response.data?.list[0]);
+        } catch (error: any) {
             console.error(error);
+            toast.error(error.response.data.message, {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                draggable: true,
+            });
         }
     }, [selectedCity.city]);
 
@@ -86,100 +93,73 @@ const Weather: React.FC = () => {
     const handleChange = (value: string) => {
         const selectedCity = City.filter((city) => city.city === value)[0];
         setSelectedCity(selectedCity);
-        fetchWeatherData(selectedCity.city);
+        setSelectedCard(0);
+        fetchData();
     };
 
     return (
         <>
-            <div className="weather_app flex align-items--center justify-content--center flex--column">
-                <p className="title font-size--30 font--bold">Weather App</p>
-                <div className="flex align-items--center justify-content--between">
-                    {isEmpty(weatherData) && <p>Loading...</p>}
-                    {!isEmpty(weatherData) && (
-                        <>
-                            <div className="weather-section flex text--white m--20">
-                                <WeatherDetails
-                                    details={weatherData}
-                                    selectedCity={selectedCity}
-                                />
-                                <div className="rightSide pt--25 pr--20 position--relative">
-                                    <div className="stateWrap">
-                                        <ReactSelect
-                                            name="city"
-                                            options={filters}
-                                            placeholder="Select location"
-                                            selectedValue={selectedOption(
-                                                filters,
-                                                selectedCity.city
-                                            )}
-                                            onChange={(positionOption: any) => {
-                                                handleChange(
-                                                    positionOption.value
-                                                        ? positionOption.value
-                                                        : ""
-                                                );
-                                            }}
-                                            className="form_field"
-                                            isClearable={false}
-                                        />
-                                    </div>
-
-                                    <div className="cardWrap">
-                                        <div className="cardList flex flex--wrap ">
-                                            {weatherChart.length > 0 &&
-                                                weatherChart.map(
-                                                    (item, index) => {
-                                                        if (index < 7) {
-                                                            return (
-                                                                <div
-                                                                    key={index}
-                                                                    className={`card flex align-items--center flex--column`}
-                                                                    // onClick={() => {
-                                                                    //     setSelectedCard(
-                                                                    //         index
-                                                                    //     );
-                                                                    // }}
-                                                                >
-                                                                    <img
-                                                                        className="day-icon"
-                                                                        alt="rohit"
-                                                                        src={`http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
-                                                                    />
-                                                                    <span className="day-name text--black">
-                                                                        {moment(
-                                                                            item.dt_txt
-                                                                        ).format(
-                                                                            "dddd,hh:mm"
-                                                                        )}
-                                                                    </span>
-                                                                    <span className="day-temp text--black">
-                                                                        {Math.round(
-                                                                            item
-                                                                                .main
-                                                                                .temp_max
-                                                                        )}
-                                                                        °C
-                                                                    </span>
-                                                                </div>
-                                                            );
-                                                        }
-                                                        return "";
-                                                    }
-                                                )}
-                                        </div>
-                                    </div>
-                                    {/* <WeekInfoCard data={weatherChart} /> */}
-                                    <HumidityDetails
-                                        details={weatherData}
-                                        selectedCity={selectedCity}
-                                    />
-                                </div>
+            <div className="weather_app">
+                <div className="weather_container">
+                    <div className="header flex justify-content--between  align-items--center width--full">
+                        <div className="image_wrapper ml--30">
+                            <img
+                                src={Logo}
+                                alt="logo"
+                                className="width--full height--full"
+                            />
+                        </div>
+                        <div className="width--20 mr--20">
+                            <ReactSelect
+                                name="city"
+                                options={filters}
+                                placeholder="Select location"
+                                selectedValue={selectedOption(
+                                    filters,
+                                    selectedCity.city
+                                )}
+                                onChange={(positionOption: any) => {
+                                    handleChange(
+                                        positionOption.value
+                                            ? positionOption.value
+                                            : ""
+                                    );
+                                }}
+                                className="form_field"
+                                isClearable={false}
+                            />
+                        </div>
+                    </div>
+                    <div className="container flex align-items--center justify-content--between flex--column">
+                        {isEmpty(chartData) && (
+                            <div>
+                                <img src={loader} alt="loader" />
                             </div>
-                        </>
-                    )}
-                    {weatherChart.length > 0 && (
-                        <WeatherChart weatherData={weatherChart} />
-                    )}
+                        )}
+                        {!isEmpty(chartData) && (
+                            <>
+                                <WeatherDetails
+                                    details={chartData}
+                                    selectedCity={selectedCity}
+                                    cityDetails={weatherChart.city}
+                                />
+                                <WeekInfoCard
+                                    data={weatherChart.list}
+                                    setSelectedCard={setSelectedCard}
+                                    selectedCard={selectedCard}
+                                    setChartData={setChartData}
+                                />
+                                <div className="flex align-items--center justify-content--evenly width--full">
+                                    {weatherChart.list?.length > 0 && (
+                                        <WeatherChart
+                                            weatherData={weatherChart.list}
+                                        />
+                                    )}
+                                    <SunRiseSetCard data={weatherChart.city} />
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </>
